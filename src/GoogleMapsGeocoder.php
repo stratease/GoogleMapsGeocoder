@@ -1077,6 +1077,12 @@
       return base64_decode(strtr($value, '-_', '+/'));
     }
 
-  }
 
-?>
+    /**
+     * @return GoogleMapsGeocoderResults
+     */
+    public function getResults()
+    {
+      return new GoogleMapsGeocoderResults($this->geocode());
+    }
+  }
