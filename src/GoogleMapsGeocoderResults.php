@@ -4,6 +4,9 @@ class GoogleMapsGeocoderResults
 {
     protected $city;
     protected $state;
+    protected $address;
+    protected $zip;
+    protected $country;
 
     /**
      * GoogleMapsGeocoderResults constructor.
@@ -24,6 +27,9 @@ class GoogleMapsGeocoderResults
         && $httpResponse['status'] === GoogleMapsGeocoder::STATUS_SUCCESS
         && isset($httpResponse['results'][0]['address_components'])) {
             $this->setCity($this->parseForCity($httpResponse))
+                ->setZip($this->parseForZip($httpResponse))
+                ->setAddress($this->parseForAddress($httpResponse))
+                ->setCountry($this->parseForCountry($httpResponse))
                 ->setState($this->parseForState($httpResponse));
 
             return true;
@@ -31,6 +37,7 @@ class GoogleMapsGeocoderResults
 
         return false;
     }
+
 
     protected function setCity($city)
     {
@@ -46,6 +53,41 @@ class GoogleMapsGeocoderResults
         return $this;
     }
 
+    protected function setZip($z)
+    {
+        $this->zip = $z;
+
+        return $this;
+    }
+
+    protected function setAddress($a)
+    {
+        $this->address = $a;
+
+        return $this;
+    }
+
+    protected function setCountry($c)
+    {
+        $this->country = $c;
+
+        return $this;
+    }
+
+    public function getCountry()
+    {
+        return $this->country;
+    }
+
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    public function getZip()
+    {
+        return $this->zip;
+    }
     public function getCity()
     {
         return $this->city;
@@ -74,6 +116,57 @@ class GoogleMapsGeocoderResults
             if(in_array(GoogleMapsGeocoder::TYPE_ADMIN_AREA_1, $component['types'])) {
 
                 return $component['short_name']; // 2 char iso code?
+            }
+        }
+
+        return null;
+    }
+
+    public function parseForCountry(array $httpResponse)
+    {
+        foreach($httpResponse['results'][0]['address_components'] as $component) {
+            if(in_array(GoogleMapsGeocoder::TYPE_COUNTRY, $component['types'])) {
+
+                return $component['short_name']; // 2 char iso code?
+            }
+        }
+
+        return null;
+    }
+
+
+    public function parseForAddress(array $httpResponse)
+    {
+        $foundStreet = false;
+        $foundRoute = false;
+        $address = '';
+        foreach($httpResponse['results'][0]['address_components'] as $component) {
+            if(!$foundRoute
+            && in_array(GoogleMapsGeocoder::TYPE_ROUTE, $component['types'])) {
+                $foundRoute = true;
+                $address = trim($address.' '.$component['long_name']); // append full street name
+            }
+
+            if(!$foundStreet
+                && in_array(GoogleMapsGeocoder::TYPE_STREET_NUMBER, $component['types'])) {
+                $foundStreet = true;
+                $address = trim($component['long_name'].' '.$address); // prepend street number
+            }
+        }
+        $address = trim($address);
+        if($address) {
+            return $address;
+        } else {
+            return null;
+        }
+    }
+
+    public function parseForZip(array $httpResponse)
+    {
+        foreach($httpResponse['results'][0]['address_components'] as $component) {
+            if(in_array(GoogleMapsGeocoder::TYPE_POSTAL_CODE, $component['types'])) {
+
+                return $component['short_name'];
             }
         }
 
