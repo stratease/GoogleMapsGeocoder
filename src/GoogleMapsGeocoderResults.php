@@ -38,7 +38,10 @@ class GoogleMapsGeocoderResults
         return false;
     }
 
-
+    /**
+     * @param $city
+     * @return $this
+     */
     protected function setCity($city)
     {
         $this->city = $city;
@@ -46,6 +49,10 @@ class GoogleMapsGeocoderResults
         return $this;
     }
 
+    /**
+     * @param $state
+     * @return $this
+     */
     protected function setState($state)
     {
         $this->state = $state;
@@ -53,6 +60,10 @@ class GoogleMapsGeocoderResults
         return $this;
     }
 
+    /**
+     * @param $z
+     * @return $this
+     */
     protected function setZip($z)
     {
         $this->zip = $z;
@@ -60,6 +71,10 @@ class GoogleMapsGeocoderResults
         return $this;
     }
 
+    /**
+     * @param $a
+     * @return $this
+     */
     protected function setAddress($a)
     {
         $this->address = $a;
@@ -67,6 +82,10 @@ class GoogleMapsGeocoderResults
         return $this;
     }
 
+    /**
+     * @param $c
+     * @return $this
+     */
     protected function setCountry($c)
     {
         $this->country = $c;
@@ -74,30 +93,50 @@ class GoogleMapsGeocoderResults
         return $this;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCountry()
     {
         return $this->country;
     }
 
+    /**
+     * @return mixed
+     */
     public function getAddress()
     {
         return $this->address;
     }
 
+    /**
+     * @return mixed
+     */
     public function getZip()
     {
         return $this->zip;
     }
+
+    /**
+     * @return mixed
+     */
     public function getCity()
     {
         return $this->city;
     }
 
+    /**
+     * @return mixed
+     */
     public function getState()
     {
         return $this->state;
     }
 
+    /**
+     * @param array $httpResponse
+     * @return null|string
+     */
     public function parseForCity(array $httpResponse)
     {
         foreach($httpResponse['results'][0]['address_components'] as $component) {
@@ -110,6 +149,10 @@ class GoogleMapsGeocoderResults
         return null;
     }
 
+    /**
+     * @param array $httpResponse
+     * @return null|string
+     */
     public function parseForState(array $httpResponse)
     {
         foreach($httpResponse['results'][0]['address_components'] as $component) {
@@ -122,6 +165,10 @@ class GoogleMapsGeocoderResults
         return null;
     }
 
+    /**
+     * @param array $httpResponse
+     * @return null|string
+     */
     public function parseForCountry(array $httpResponse)
     {
         foreach($httpResponse['results'][0]['address_components'] as $component) {
@@ -135,6 +182,10 @@ class GoogleMapsGeocoderResults
     }
 
 
+    /**
+     * @param array $httpResponse
+     * @return null|string
+     */
     public function parseForAddress(array $httpResponse)
     {
         $foundStreet = false;
@@ -161,6 +212,10 @@ class GoogleMapsGeocoderResults
         }
     }
 
+    /**
+     * @param array $httpResponse
+     * @return null|string
+     */
     public function parseForZip(array $httpResponse)
     {
         foreach($httpResponse['results'][0]['address_components'] as $component) {
